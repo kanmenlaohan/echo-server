@@ -21,7 +21,7 @@ def client(msg, log_buffer=sys.stderr):
     try:
         print('sending "{0}"'.format(msg), file=log_buffer)
         # TODO: send your message to the server here.
-        client_socket.sendall(msg.encode('utf8'))
+        client_socket.sendall(msg.encode())
         # TODO: the server should be sending you back your message as a series
         #       of 16-byte chunks. Accumulate the chunks you get to build the
         #       entire reply from the server. Make sure that you have received
@@ -32,7 +32,7 @@ def client(msg, log_buffer=sys.stderr):
 
         while received_message != msg:
             chunk = client_socket.recv(16)
-            received_message = received_message.join(chunk.decode('utf8'))
+            received_message = received_message.join(chunk.decode())
             print('received "{0}"'.format(received_message), file=log_buffer)
     except Exception as e:
         traceback.print_exc()
@@ -44,7 +44,7 @@ def client(msg, log_buffer=sys.stderr):
         client_socket.close()
         # TODO: when all is said and done, you should return the entire reply
         # you received from the server as the return value of this function.
-
+        return received_message
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:

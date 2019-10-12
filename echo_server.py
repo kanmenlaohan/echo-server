@@ -17,9 +17,11 @@ def server(log_buffer=sys.stderr):
 
     # log that we are building a server
     print("making a server on {0}:{1}".format(*address), file=log_buffer)
-
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
+    server_socket.bind(address)
     # TODO: bind your new sock 'sock' to the address above and begin to listen
     #       for incoming connections
+    server_socket.listen(5)
 
     try:
         # the outer loop controls the creation of new connection sockets. The
@@ -32,10 +34,7 @@ def server(log_buffer=sys.stderr):
             #       the client so we can report it below.  Replace the
             #       following line with your code. It is only here to prevent
             #       syntax errors
-            server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
 
-            server_socket.bind(address)
-            server_socket.listen(5)
             conn, addr = server_socket.accept()
 
             try:
@@ -50,15 +49,16 @@ def server(log_buffer=sys.stderr):
                     #       following line with your code.  It's only here as
                     #       a placeholder to prevent an error in string
                     #       formatting
-                    data = conn.recv(1024)
+                    data = conn.recv(16)
                     print('received "{0}"'.format(data.decode('utf8')))
                     # TODO: Send the data you received back to the client, log
                     # the fact using the print statement here.  It will help in
                     # debugging problems.
-                    if len(data) == 0:
-                        break
                     conn.sendall(data)
                     print('sent "{0}"'.format(data.decode('utf8')))
+
+                    if len(data) < 16:
+                        break
                     # TODO: Check here to see whether you have received the end
                     # of the message. If you have, then break from the `while True`
                     # loop.
@@ -77,7 +77,7 @@ def server(log_buffer=sys.stderr):
                 print(
                     'echo complete, client connection closed', file=log_buffer
                 )
-                server_socket.close()
+                conn.close()
 
     except KeyboardInterrupt:
         # TODO: Use the python KeyboardInterrupt exception as a signal to
